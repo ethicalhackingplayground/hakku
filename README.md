@@ -10,7 +10,7 @@ and fill in the information in the configuration file.
 https://www.twilio.com/ but it basically sends someone a malicious
 link through SMS.
 
-## EvilTWin AP Deployment option
+## EvilTwin AP Deployment option
 This deployment option is still in the testing phase, but what it does
 is creates an evil ap (access point) that serves a malicious update browser page
 and when someone downloads the update and installs it, you will have access to their phone.
