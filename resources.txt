@@ -1,0 +1,7 @@
+ConfigParser
+pybluez
+pyobex
+fbchat
+colorama
+twilio
+ansi
