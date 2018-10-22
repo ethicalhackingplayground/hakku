@@ -246,8 +246,7 @@ def Scan():
 	global interface
 	print(Style.BRIGHT)
 	interface = raw_input(Fore.WHITE + "\nType your interface: (hci0) ")
-	os.system("hciconfig %s down" % interface)
-	if (os.system("hciconfig %s up" % (interface)) == 0):
+	if (os.system("hciconfig %s reset" % (interface)) == 0):
 
 		Print(CORRECT, "Interface is up ")
 
