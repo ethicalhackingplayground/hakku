@@ -261,7 +261,8 @@ def Scan():
 			# Print the device info
 			Print(INFO, "Found %s Devices" % len(devices))
 			if (len(devices) == 0):
-				SetupBluetooth()
+				Print(ERROR, "No Bluetooth Devices found.")
+				sys.exit(1)
 			else:
 
 
