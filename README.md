@@ -2,7 +2,9 @@
 Hakku is a android take over tool using various deployment options.
 
 ## Install
-> python install.py
+`python install.py`
+
+
 
 ## SMS Deployment option
 you need to go to the twilio website and create an account
